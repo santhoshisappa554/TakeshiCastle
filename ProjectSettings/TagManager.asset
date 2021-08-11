@@ -7,6 +7,11 @@ TagManager:
   - Enemy
   - MazeGeo
   - Fire
+  - coin
+  - power
+  - Ghost
+  - Bullet
+  - Key
   layers:
   - Default
   - TransparentFX

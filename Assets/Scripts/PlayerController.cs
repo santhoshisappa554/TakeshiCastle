@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -18,11 +20,16 @@ public class PlayerController : MonoBehaviour
     public LayerMask groundMask;
     bool canDoubleJump;
     public float runSpeed;
+    public int score = 0;
+    public Text scoreText;
+    public float Health = 2;
+    public Text healthText;
     /*public Animator anim;
     public Transform firePoint;
     public GameObject prefab;*/
     public static PlayerController instance;
-
+    public float time;
+    public Text timeText;
     private void Awake()
     {
         instance = this;
@@ -30,12 +37,20 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+      
     }
 
     // Update is called once per frame
     void Update()
     {
+        time = time - Time.deltaTime;
+        timeText.text = "Time: " + Mathf.RoundToInt(time);
+
+        if (Health == 0 || time<=0)
+        {
+            SceneManager.LoadScene(7);
+        }
+        
        
         Vector3 horiMove = transform.right * Input.GetAxis("Horizontal");
         Vector3 verMove = transform.forward * Input.GetAxis("Vertical");
@@ -86,30 +101,42 @@ public class PlayerController : MonoBehaviour
         cameraTransform.rotation = Quaternion.Euler(cameraTransform.rotation.eulerAngles + new Vector3(mouseInput.y, 0, 0));
 
 
-        //Animation
-        /*anim.SetFloat("moveSpeed", moveinput.magnitude);
-        anim.SetBool("onGround", canJump);*/
+       
 
-
-        //shoot bullet
-       /* if (Input.GetMouseButtonDown(0))
+        
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("coin"))
         {
-            //raycast
-            RaycastHit hit;
-            if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, 50f))
+            score = score + 5;
+            print("Score: " + score);
+            scoreText.text = "Score: " + score;
+            Destroy(other.gameObject);
+        }
+        else if (other.gameObject.CompareTag("power"))
+        {
+            if (Health <= 1)
             {
-                firePoint.LookAt(hit.point);
+                Health = Health + 1;
+                healthText.text = "Health: " + Health;
             }
-            else
-            {
-                if (Vector3.Distance(cameraTransform.position, hit.point) > 2f)
-                {
-                    firePoint.LookAt(cameraTransform.position + (cameraTransform.forward * 30f));
-                }
+            Destroy(other.gameObject);
+        }
+        else if (other.gameObject.CompareTag("Key"))
+        {
+            SceneManager.LoadScene(8);
+        }
 
-            }
-
-            Instantiate(prefab, firePoint.position, firePoint.rotation);
-        }*/
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            print("Enemy collided");
+            Health = Health - 1;
+            healthText.text = "Health: " + Health;
+        }
+       
     }
 }
