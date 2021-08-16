@@ -13,6 +13,6 @@ public class Sounds
     public float pitch;
     public bool audioLoop;
     [HideInInspector]
-    public AudioSource audioSource;
+    public AudioSource audioSource;//audio
 
 }
